@@ -4,8 +4,10 @@ import (
     "flag"
     "fmt"
     "os"
+    "strings"
 
-    "github.com/domainr/whois"
+    "github.com/likexian/whois-go"
+    "github.com/likexian/whois-parser-go"
     "github.com/mackerelio/checkers"
 )
 
@@ -17,26 +19,36 @@ func Do() {
 }
 
 
+/**
+ * Fetch WHOIS string from server
+ */
+func fetchWhois(domain string) (raw string, err error) {
+    // If query to JPRS, set option to return English forcely
+    if strings.HasSuffix(domain, ".jp") {
+        raw, err = whois.Whois(domain + "/e", "whois.jprs.jp")
+    } else {
+        raw, err = whois.Whois(domain)
+    }
+    return raw, err
+}
+
+
 func run(args []string) * checkers.Checker {
     var (
          d = flag.String("domain", "example.com", "check target domain")
     )
     flag.Parse()
-    request, err := whois.NewRequest(*d)
+    raw, err := fetchWhois(*d)
     if err != nil {
-        // TODO: Echo reason
+        // TODO: handle more formal for golang
+        fmt.Println(err)
         os.Exit(1)
     }
-    response, err := whois.DefaultClient.Fetch(request)
+    record, err := whois_parser.Parse(raw)
     if err != nil {
-        // TODO: Echo reason
+        // TODO: handle more formal for golang
+        fmt.Println(err)
         os.Exit(1)
     }
-    record, err := response.Parse() // not implemented yet
-    if err != nil {
-        // TODO: Echo reason
-        os.Exit(1)
-    }
-    fmt.Println(record)
-	return checkers.NewChecker(checkers.OK, *d)
+	return checkers.NewChecker(checkers.OK, *d + "is expired at " + record.Registrar.ExpirationDate)
 }
