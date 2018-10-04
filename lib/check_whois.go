@@ -1,6 +1,7 @@
 package check_whois
 
 import (
+    "flag"
     "os"
 
     "github.com/mackerelio/checkers"
@@ -15,5 +16,9 @@ func Do() {
 
 
 func run(args []string) * checkers.Checker {
-	return checkers.NewChecker(checkers.OK, "OK")
+    var (
+         d = flag.String("domain", "example.com", "check target domain")
+    )
+    flag.Parse()
+	return checkers.NewChecker(checkers.OK, *d)
 }
