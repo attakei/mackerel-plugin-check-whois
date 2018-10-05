@@ -1,6 +1,6 @@
 package main
 
-import "gitlab.com/attakei/mackerel-plugin-check-whois/lib"
+import "github.com/attakei/mackerel-plugin-check-whois/lib"
 
 
 func main() {
