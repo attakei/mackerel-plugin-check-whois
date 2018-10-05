@@ -5,4 +5,12 @@ install:
 
 script:
   - go build
-  - ls -l
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  skip_cleanup: true
+  file: mackerel-plugin-check-whois
+  on:
+    tag: true
+    condition: "$TRAVIS_TAG =~ ^v[0-9].*$"
