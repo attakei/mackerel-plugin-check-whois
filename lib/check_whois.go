@@ -6,6 +6,7 @@ import (
     "os"
     "strings"
 
+    "github.com/joyt/godate"
     "github.com/likexian/whois-go"
     "github.com/likexian/whois-parser-go"
     "github.com/mackerelio/checkers"
@@ -50,5 +51,12 @@ func run(args []string) * checkers.Checker {
         fmt.Println(err)
         os.Exit(1)
     }
-	return checkers.NewChecker(checkers.OK, *d + " is expired at " + record.Registrar.ExpirationDate)
+    expired, err := date.Parse(record.Registrar.ExpirationDate)
+    if err != nil {
+        // TODO: handle more formal for golang
+        fmt.Println(err)
+        os.Exit(1)
+    }
+    fmt.Println(expired)
+	return checkers.NewChecker(checkers.OK, *d + " is expired at " + expired.String())
 }
