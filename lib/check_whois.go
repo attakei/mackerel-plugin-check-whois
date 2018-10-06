@@ -62,11 +62,11 @@ func run(args []string) * checkers.Checker {
     }
     delta := int(expired.Sub(time.Now()).Hours()) / 24
     msg := fmt.Sprintf("%s is expired at %d days", *domain, delta)
-    status := checkers.OK
     if delta < *daysCritical {
-        status = checkers.CRITICAL
-    } else if delta < *daysWarning {
-        status = checkers.WARNING
+        return checkers.Critical(msg)
     }
-	return checkers.NewChecker(status, msg)
+    if delta < *daysWarning {
+        return checkers.Warning(msg)
+    }
+	return checkers.Ok(msg)
 }
