@@ -51,6 +51,8 @@ func fetchExpired(domain string) (expired time.Time, err error) {
 func run(args []string) * checkers.Checker {
     var (
          d = flag.String("domain", "example.com", "check target domain")
+         daysWarning = flag.Int("warning", 30, "Threshold of WARNING status")
+         daysCritical = flag.Int("critical", 7, "Threshold of CRITICAL status")
     )
     flag.Parse()
     expired, err := fetchExpired(*d)
@@ -60,5 +62,12 @@ func run(args []string) * checkers.Checker {
         os.Exit(1)
     }
     delta := int(expired.Sub(time.Now()).Hours()) / 24
-	return checkers.NewChecker(checkers.OK, *d + " is expired at " + fmt.Sprint(delta) + " days")
+    msg := fmt.Sprintf("%s is expired at %d days", *d, delta)
+    status := checkers.OK
+    if delta < *daysCritical {
+        status = checkers.CRITICAL
+    } else if delta < *daysWarning {
+        status = checkers.WARNING
+    }
+	return checkers.NewChecker(status, msg)
 }
