@@ -59,5 +59,6 @@ func run(args []string) * checkers.Checker {
         fmt.Println(err)
         os.Exit(1)
     }
-	return checkers.NewChecker(checkers.OK, *d + " is expired at " + expired.String())
+    delta := int(expired.Sub(time.Now()).Hours()) / 24
+	return checkers.NewChecker(checkers.OK, *d + " is expired at " + fmt.Sprint(delta) + " days")
 }
