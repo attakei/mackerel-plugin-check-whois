@@ -50,19 +50,18 @@ func fetchExpired(domain string) (expired time.Time, err error) {
 
 func run(args []string) * checkers.Checker {
     var (
-         d = flag.String("domain", "example.com", "check target domain")
+         domain = flag.String("domain", "example.com", "check target domain")
          daysWarning = flag.Int("warning", 30, "Threshold of WARNING status")
          daysCritical = flag.Int("critical", 7, "Threshold of CRITICAL status")
     )
     flag.Parse()
-    expired, err := fetchExpired(*d)
+    expired, err := fetchExpired(*domain)
     if err != nil {
-        // TODO: handle more formal for golang
-        fmt.Println(err)
-        os.Exit(1)
+        msg := fmt.Sprintf("%s cannot fetch expired (%s)", *domain, err)
+        return checkers.Unknown(msg)
     }
     delta := int(expired.Sub(time.Now()).Hours()) / 24
-    msg := fmt.Sprintf("%s is expired at %d days", *d, delta)
+    msg := fmt.Sprintf("%s is expired at %d days", *domain, delta)
     status := checkers.OK
     if delta < *daysCritical {
         status = checkers.CRITICAL
