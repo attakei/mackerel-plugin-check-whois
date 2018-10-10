@@ -2,7 +2,9 @@ language: go
 
 env:
   - GO_OS=linux GO_ARCH=amd64
+  - GO_OS=linux GO_ARCH=386
   - GO_OS=darwin GO_ARCH=amd64
+  - GO_OS=darwin GO_ARCH=386
   - GO_OS=windows GO_ARCH=amd64
   - GO_OS=windows GO_ARCH=386
 
